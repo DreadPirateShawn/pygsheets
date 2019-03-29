@@ -857,6 +857,41 @@ class Worksheet(object):
 
         self.client.sheet.batch_update(self.spreadsheet.id, request)
 
+    def auto_resize_dimensions(self, dimension, start, end=None):
+        """Automatically resizes one or more dimensions
+        :param dimension: COLUMNS or ROWS
+        :param start: index of dimension to be resized
+        :param end: index of dimension that will be resized
+        """
+        if end is None or end <= start:
+            end = start + 1
+
+        request = {
+          "autoResizeDimensions": {
+            "dimensions": {
+              "sheetId": self.id,
+              "dimension": dimension,
+              "startIndex": start,
+              "endIndex": end
+            }
+          }
+        },
+        self.client.sheet.batch_update(self.spreadsheet.id, request)
+
+    def auto_resize_columns(self, start, end=None):
+        """Automatically resizes one or more columns
+        :param start: index of column to be resized
+        :param end: index of column that will be resized
+        """
+        self.auto_resize_dimensions('COLUMNS', start, end)
+
+    def auto_resize_rows(self, start, end=None):
+        """Automatically resizes one or more rows
+        :param start: index of row to be resized
+        :param end: index of row that will be resized
+        """
+        self.auto_resize_dimensions('ROWS', start, end)
+
     def update_dimensions_visibility(self, start, end=None, dimension="ROWS", hidden=True):
         """Hide or show one or more rows or columns.
 

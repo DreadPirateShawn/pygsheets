@@ -258,420 +258,467 @@ class TestWorkSheet(object):
 
         os.rmdir(self.output_path)
 
-    def test_properties(self):
-        json_sheet = self.worksheet.jsonSheet
+#    def test_properties(self):
+#        json_sheet = self.worksheet.jsonSheet
+#
+#        assert self.worksheet.id == json_sheet['properties']['sheetId']
+#        assert self.worksheet.title == json_sheet['properties']['title']
+#        assert self.worksheet.index == json_sheet['properties']['index']
+#
+#    def test_resize(self):
+#        rows = self.worksheet.rows
+#        cols = self.worksheet.cols
+#
+#        self.worksheet.cols = cols + 1
+#        assert self.worksheet.cols == cols + 1
+#
+#        self.worksheet.add_cols(1)
+#        assert self.worksheet.cols == cols + 2
+#
+#        self.worksheet.rows = rows + 1
+#        assert self.worksheet.rows == rows + 1
+#
+#        self.worksheet.add_rows(1)
+#        assert self.worksheet.rows == rows + 2
+#
+#        self.worksheet.resize(rows, cols)
+#        assert self.worksheet.cols == cols
+#        assert self.worksheet.rows == rows
+#
+#    def test_frozen_rows(self):
+#        ws = self.worksheet
+#        assert ws.frozen_rows == 0
+#        ws.frozen_rows = 1
+#        ws.refresh()
+#        assert ws.frozen_rows == 1
+#        ws.frozen_rows = 0
+#        ws.refresh()
+#
+#    def test_frozen_cols(self):
+#        ws = self.worksheet
+#        assert ws.frozen_cols == 0
+#        ws.frozen_cols = 2
+#        ws.refresh()
+#        assert ws.frozen_cols == 2
+#        ws.frozen_cols = 0
+#        ws.refresh()
+#
+#    def test_addr_reformat(self):
+#        addr = pygsheets.format_addr((1, 1))
+#        assert addr == 'A1'
+#
+#        addr = pygsheets.format_addr('A1')
+#        assert addr == (1, 1)
+#
+#    def test_cell(self):
+#        assert isinstance(self.worksheet.cell('A1'), pygsheets.Cell)
+#        assert isinstance(self.worksheet.cell((1, 1)), pygsheets.Cell)
+#
+#        with pytest.raises(pygsheets.CellNotFound):
+#            self.worksheet.cell((self.worksheet.rows + 5, self.worksheet.cols + 5))
+#
+#    def test_insert_cols_rows(self):
+#        cols = self.worksheet.cols
+#        self.worksheet.insert_cols(1, 2)
+#        assert self.worksheet.cols == (cols+2)
+#
+#        rows = self.worksheet.rows
+#        self.worksheet.insert_rows(1, 2)
+#        assert self.worksheet.rows == (rows + 2)
+#
+#        with pytest.raises(pygsheets.InvalidArgumentValue):
+#            pygsheets.format_addr([1, 1])
+#
+#    def test_values(self):
+#        self.worksheet.update_value('A1', 'test val')
+#        vals = self.worksheet.get_values('A1', 'B4')
+#        assert isinstance(vals, list)
+#        assert vals[0][0] == 'test val'
+#
+#        vals = self.worksheet.get_values('A1', (2, 2), 'cells')
+#        assert isinstance(vals, list)
+#        assert isinstance(vals[0][0], pygsheets.Cell)
+#        assert vals[0][0].value == 'test val'
+#
+#    def test_update_cells(self):
+#        self.worksheet.update_values(crange='A1:B2', values=[[1, 2], [3, 4]])
+#        assert self.worksheet.cell((1, 1)).value == str(1)
+#        self.worksheet.resize(1, 1)
+#        self.worksheet.update_values(crange='A1', values=[[1, 2, 5], [3, 4, 6], [3, 4, 61]], extend=True)
+#        assert self.worksheet.cols == 3
+#        assert self.worksheet.rows == 3
+#        assert self.worksheet.cell((3, 3)).value == '61'
+#
+#        self.worksheet.resize(30, 30)
+#        cells = [pygsheets.Cell('A1', 10), pygsheets.Cell('A2', 12)]
+#        self.worksheet.update_values(cell_list=cells)
+#        assert self.worksheet.cell((1, 1)).value == str(cells[0].value)
+#
+#    def test_update_col(self):
+#        self.worksheet.resize(30, 30)
+#        self.worksheet.update_col(5, [1, 2, 3, 4, 5])
+#        cols = self.worksheet.get_col(5)
+#        assert isinstance(cols, list)
+#        assert cols[3] == str(4)
+#
+#    def test_update_row(self):
+#        self.worksheet.resize(30, 30)
+#        self.worksheet.update_row(5, [1, 2, 3, 4, 5])
+#        rows = self.worksheet.get_row(5)
+#        assert isinstance(rows, list)
+#        assert rows[3] == str(4)
+#
+#    def test_range(self):
+#        assert isinstance(self.worksheet.range('A1:A5'), list)
+#
+#    def test_value_set(self):
+#        self.worksheet.update_value('A1', 'xxx')
+#        assert self.worksheet.cell('A1').value == 'xxx'
+#
+#    def test_iter(self):
+#        self.worksheet.update_row(1, [1, 2, 3, 4, 5])
+#        self.worksheet.update_row(2, [2, 3, 4, 5, 6])
+#        wks_iter = iter(self.worksheet)
+#        assert next(wks_iter)[:5] == ['1', '2', '3', '4', '5']
+#        assert next(wks_iter)[:5] == ['2', '3', '4', '5', '6']
+#
+#    def test_getitem(self):
+#        self.worksheet.update_row(1, [1, 2, 3, 4, 5])
+#        row = self.worksheet[0]
+#        assert len(row) == self.worksheet.cols
+#        assert row[0][0] == str(1)
+#
+#    def test_clear(self):
+#        self.worksheet.update_value('S10', 100)
+#        self.worksheet.clear()
+#        assert self.worksheet.get_all_values(include_tailing_empty=False, include_tailing_empty_rows=False) == [[]]
+#
+#    def test_delete_dimension(self):
+#        self.worksheet.clear()
+#        rows = self.worksheet.rows
+#        self.worksheet.update_row(10, [1, 2, 3, 4, 5])
+#        self.worksheet.delete_rows(10)
+#        assert self.worksheet.get_value((9, 2)) != 2
+#        assert self.worksheet.rows == rows - 1
+#
+#        cols = self.worksheet.cols
+#        self.worksheet.update_col(10, [1, 2, 3, 4, 5])
+#        self.worksheet.delete_cols(10)
+#        assert self.worksheet.get_value((10, 2)) != 2
+#        assert self.worksheet.cols == cols - 1
+#
+#    def test_copy_to(self):
+#        target = pygsheet_client.create(self.copy_sheet_title)
+#        spreadsheet_id = target.id
+#        worksheet_copy = self.worksheet.copy_to(spreadsheet_id)
+#
+#        assert worksheet_copy.spreadsheet.id == spreadsheet_id
+#
+#    # @TODO
+#    def test_append_row(self):
+#        assert True
+#
+#    def test_set_dataframe(self):
+#        try:
+#            import pandas as pd
+#        except ImportError:
+#            pass
+#        else:
+#            df = pd.DataFrame({'a': [1, 2, 3, 'g'], 'x': [4, 5, 6, 'h']})
+#            self.worksheet.set_dataframe(df, 'B2', copy_head=True, fit=True, copy_index=True)
+#            assert self.worksheet.get_value('D5') == '6'
+#            assert self.worksheet.get_value('C5') == '3'
+#            assert self.worksheet.get_value('D2') == 'x'
+#            assert self.worksheet.cols == 4
+#            assert self.worksheet.rows == 6
+#
+#            self.worksheet.set_dataframe(df, 'B2', copy_head=True, fit=True, copy_index=False)
+#            assert self.worksheet.get_value('C2') == 'x'
+#
+#            self.worksheet.set_dataframe(df, 'B2', copy_head=False, fit=True, copy_index=False)
+#            assert self.worksheet.get_value('B2') == '1'
+#            assert self.worksheet.get_value('C2') == '4'
+#
+#            # Test MultiIndex
+#            try:
+#                import numpy as np
+#            except ImportError:
+#                pass
+#            else:
+#                arrays = [np.array(['bar', 'bar', 'baz', 'baz', 'foo', 'foo', 'qux', 'qux']),
+#                          np.array(['one', 'two', 'one', 'two', 'one', 'two', 'one', 'two'])]
+#                tuples = list(zip(*arrays))
+#                index = pd.MultiIndex.from_tuples(tuples, names=['first', 'second'])
+#                df = pd.DataFrame(np.random.randn(8, 8), index=index, columns=index)
+#                self.worksheet.set_dataframe(df, 'A1', copy_index=True)
+#                assert self.worksheet.get_value('C1') == 'bar'
+#                assert self.worksheet.get_value('C2') == 'one'
+#                assert self.worksheet.get_value('F1') == 'baz'
+#                assert self.worksheet.get_value('F2') == 'two'
+#                self.worksheet.clear()
+#
+#    # @TODO
+#    def test_get_as_df(self):
+#        assert True
+#
+#    def test_get_values(self):
+#        self.worksheet.resize(10, 10)
+#        self.worksheet.clear()
+#
+#        assert self.worksheet.get_values('A1', 'E5', include_tailing_empty=True, include_tailing_empty_rows=True)
+#
+#        self.worksheet.update_values('A1:D4', [[1, 2, '', 3], ['','','',''], [4, 5, '', ''], ['', 6, '', '']])
+#        # matrix testing
+#        assert self.worksheet.get_values('A1', 'E5', include_tailing_empty=True, include_tailing_empty_rows=True) == \
+#               [[u'1', u'2', u'', u'3', ''], ['', '', '', '', ''], [u'4', u'5', '', '', ''], [u'', u'6', '', '', ''], ['', '', '', '', '']]
+#        assert self.worksheet.get_values('A1', 'E5', include_tailing_empty=True, include_tailing_empty_rows=False) == \
+#               [[u'1', u'2', u'', u'3', ''], ['', '', '', '', ''], [u'4', u'5', '', '', ''], [u'', u'6', '', '', ''] ]
+#        assert self.worksheet.get_values('A1', 'E5', include_tailing_empty=False, include_tailing_empty_rows=True) == \
+#               [[u'1', u'2', u'', u'3'], [], [u'4', u'5'], [u'', u'6'], []]
+#        assert self.worksheet.get_values('A1', 'E5', include_tailing_empty=False, include_tailing_empty_rows=False) == \
+#               [[u'1', u'2', u'', u'3'], [], [u'4', u'5'], [u'', u'6']]
+#
+#        # matrix testing columns
+#        assert self.worksheet.get_values('A1', 'E5', include_tailing_empty=True, include_tailing_empty_rows=True, majdim="COLUMNS") == \
+#               [[u'1', u'', u'4', '', ''],[u'2', u'', u'5', u'6', ''], ['', '', '', '', ''], [u'3', '', '', '', ''], ['', '', '', '', '']]
+#        assert self.worksheet.get_values('A1', 'E5', include_tailing_empty=True, include_tailing_empty_rows=False, majdim="COLUMNS") == \
+#               [[u'1', u'', u'4', '', ''],[u'2', u'', u'5', u'6', ''], ['', '', '', '', ''], [u'3', '', '', '', '']]
+#        assert self.worksheet.get_values('A1', 'E5', include_tailing_empty=False, include_tailing_empty_rows=True, majdim="COLUMNS") == \
+#               [[u'1', u'', u'4'], [u'2', u'', u'5', u'6'], [], [u'3'], []]
+#        assert self.worksheet.get_values('A1', 'E5', include_tailing_empty=False, include_tailing_empty_rows=False, majdim="COLUMNS") == \
+#               [[u'1', u'', u'4'], [u'2', u'', u'5', u'6'], [], [u'3']]
+#
+#        # Cells testing rows
+#        self.worksheet.clear()
+#        self.worksheet.update_values('A1:B2', [[1, 2], [3,'']])
+#        assert self.worksheet.get_values('A1', 'C3', include_tailing_empty=True, include_tailing_empty_rows=True,returnas="cells") == \
+#               [[Cell('A1', '1'), Cell('B1', '2'), Cell('C1', '')],
+#                [Cell('A2', '3'), Cell('B2', ''), Cell('C2', '')],
+#                [Cell('A3', ''), Cell('B3', ''), Cell('C3', '')]]
+#        assert self.worksheet.get_values('A1', 'C3', include_tailing_empty=True, include_tailing_empty_rows=False,returnas="cells") == \
+#               [[Cell('A1', '1'), Cell('B1', '2'), Cell('C1', '')],
+#                [Cell('A2', '3'), Cell('B2', ''), Cell('C2', '')]]
+#        assert self.worksheet.get_values('A1', 'C3', include_tailing_empty=False, include_tailing_empty_rows=True ,returnas="cells") == \
+#               [[Cell('A1', '1'), Cell('B1', '2')], [Cell('A2', '3')], []]
+#        assert self.worksheet.get_values('A1', 'D3', include_tailing_empty=False, include_tailing_empty_rows=False,returnas="cells" ) == \
+#               [[Cell('A1', '1'), Cell('B1', '2')], [Cell('A2', '3')]]
+#
+#        # Cells testing cols
+#        self.worksheet.clear()
+#        self.worksheet.update_values('A1:B2', [[1, 2], [3,'']])
+#        assert self.worksheet.get_values('A1', 'C3', include_tailing_empty=True, include_tailing_empty_rows=True,returnas="cells",majdim="COLUMNS") == \
+#               [[Cell('A1', '1'), Cell('A2', '2'), Cell('A3', '')],
+#                [Cell('B1', '3'), Cell('B2', ''), Cell('B3', '')],
+#                [Cell('C1', ''), Cell('C2', ''), Cell('C3', '')]]
+#        assert self.worksheet.get_values('A1', 'C3', include_tailing_empty=True, include_tailing_empty_rows=False,returnas="cells",majdim="COLUMNS") == \
+#               [[Cell('A1', '1'), Cell('A2', '2'), Cell('A3', '')],
+#                [Cell('B1', '3'), Cell('B2', ''), Cell('B3', '')]]
+#        assert self.worksheet.get_values('A1', 'C3', include_tailing_empty=False, include_tailing_empty_rows=True ,returnas="cells",majdim="COLUMNS") == \
+#               [[Cell('A1', '1'), Cell('A2', '2')], [Cell('B1', '3')], []]
+#        assert self.worksheet.get_values('A1', 'D3', include_tailing_empty=False, include_tailing_empty_rows=False,returnas="cells",majdim="COLUMNS") == \
+#               [[Cell('A1', '1'), Cell('A2', '2')], [Cell('B1', '3')]]
+#
+#    def test_hide_rows(self):
+#        self.worksheet.hide_dimensions(0, 2,dimension="ROWS")
+#        json = self.spreadsheet.client.sheet.get(self.spreadsheet.id, fields="sheets/data/rowMetadata/hiddenByUser")
+#        assert json['sheets'][0]['data'][0]['rowMetadata'][0]['hiddenByUser'] == True
+#        assert json['sheets'][0]['data'][0]['rowMetadata'][1]['hiddenByUser'] == True
+#        self.worksheet.show_dimensions(0, 2,dimension="ROWS")
+#        json = self.spreadsheet.client.sheet.get(self.spreadsheet.id, fields="sheets/data/rowMetadata/hiddenByUser")
+#        assert json['sheets'][0]['data'][0]['rowMetadata'][0].get('hiddenByUser', False) == False
+#        assert json['sheets'][0]['data'][0]['rowMetadata'][1].get('hiddenByUser', False) == False
+#
+#    def test_hide_columns(self):
+#        self.worksheet.hide_dimensions(0, 2,dimension="COLUMNS")
+#        json = self.spreadsheet.client.sheet.get(self.spreadsheet.id, fields="sheets/data/columnMetadata/hiddenByUser")
+#        assert json['sheets'][0]['data'][0]['columnMetadata'][0]['hiddenByUser'] == True
+#        assert json['sheets'][0]['data'][0]['columnMetadata'][1]['hiddenByUser'] == True
+#        self.worksheet.show_dimensions(0, 2, dimension="COLUMNS")
+#        json = self.spreadsheet.client.sheet.get(self.spreadsheet.id, fields="sheets/data/columnMetadata/hiddenByUser")
+#        assert json['sheets'][0]['data'][0]['columnMetadata'][0].get('hiddenByUser', False) == False
+#        assert json['sheets'][0]['data'][0]['columnMetadata'][1].get('hiddenByUser', False) == False
+#
+#    def test_find(self):
+#        cells = self.worksheet.find('test')
+#        assert isinstance(cells, list)
+#        assert 0 == len(cells)
+#        self.worksheet.clear()
+#        self.worksheet.update_row(1, ['test', 'test', 100, 'TEST', 'testtest', 'test', 'test', '=SUM(C:C)'])
+#
+#        cells = self.worksheet.find('test')
+#        assert 6 == len(cells)
+#        cells = self.worksheet.find('Test')
+#        assert 6 == len(cells)
+#        cells = self.worksheet.find('TEST')
+#        assert 6 == len(cells)
+#        cells = self.worksheet.find('test', matchCase=True)
+#        assert 5 == len(cells)
+#        cells = self.worksheet.find('TEST', matchCase=True)
+#        assert 1 == len(cells)
+#        cells = self.worksheet.find('test', matchEntireCell=True)
+#        assert 5 == len(cells)
+#        cells = self.worksheet.find('test', matchCase=True, matchEntireCell=True)
+#        assert 4 == len(cells)
+#        cells = self.worksheet.find('test', searchByRegex=True, matchCase=True)
+#        assert 5 == len(cells)
+#        cells = self.worksheet.find('test', searchByRegex=True, matchEntireCell=True)
+#        assert 5 == len(cells)
+#        cells = self.worksheet.find('test', searchByRegex=True, matchCase=True, matchEntireCell=True)
+#        assert 4 == len(cells)
+#        cells = self.worksheet.find('100')
+#        assert 1 == len(cells)
+#        cells = self.worksheet.find('100', matchEntireCell=False, includeFormulas=True)
+#        assert 2 == len(cells)
+#        cells = self.worksheet.find('\w+', searchByRegex=True)
+#        assert 7 == len(cells)
+#        self.worksheet.clear('A1', 'H1')
+#
+#    def test_replace(self):
+#        self.worksheet.update_row(1, ['test', 'test', 100, 'TEST', 'testtest', 'test', 'test', '=SUM(C:C)'])
+#        self.worksheet.replace('test', 'value')
+#        assert self.worksheet.cell('A1').value == 'value'
+#
+#        # TODO: Unlink does not work. This should test unlinked replace, as it is different from linked.
+#        # but instead just tests normal again.
+#        # self.worksheet.unlink()
+#        # self.worksheet.replace('value', 'test')
+#        # assert self.worksheet.cell('A1').value == 'test'
+#
+#    def test_export(self):
+#        self.worksheet.update_row(1, ['test', 'test', 'test'])
+#        self.worksheet.export(filename='test', path=self.output_path)
+#        self.worksheet.export(file_format=ExportType.PDF, filename='test', path=self.output_path)
+#        self.worksheet.export(file_format=ExportType.XLS, filename='test', path=self.output_path)
+#        self.worksheet.export(file_format=ExportType.ODT, filename='test', path=self.output_path)
+#        self.worksheet.export(file_format=ExportType.HTML, filename='test', path=self.output_path)
+#        self.worksheet.export(file_format=ExportType.TSV, filename='test', path=self.output_path)
+#
+#        assert os.path.exists(self.output_path + '/test.csv')
+#        assert os.path.exists(self.output_path + '/test.tsv')
+#        assert os.path.exists(self.output_path + '/test.xls')
+#        assert os.path.exists(self.output_path + '/test.odt')
+#        assert os.path.exists(self.output_path + '/test.zip')
+#
+#        self.spreadsheet.add_worksheet('test2')
+#        worksheet_2 = self.spreadsheet.worksheet('title', 'test2')
+#        worksheet_2.update_row(1, ['test', 'test', 'test', 'test', 'test'])
+#        worksheet_2.export(file_format=ExportType.CSV, filename='test', path=self.output_path)
+#
+#        assert os.path.exists(self.output_path + '/test.csv')
+#        with open(self.output_path + '/test.csv', 'r') as file:
+#            content = file.read()
+#            assert 'test,test,test,test,test' == content
+#
+#        self.worksheet.clear()
+#        self.spreadsheet.del_worksheet(worksheet_2)
+#
+#    def test_sort_range(self):
+#        self.worksheet.update_values('A1:A4',[[2],[3],[1],[4]])
+#        self.worksheet.sort_range('A1','A4',0,'ASCENDING')
+#        assert self.worksheet.get_values('A1','A4') == [['1'],['2'],['3'],['4']]
+#        self.worksheet.sort_range('A1','A4',0,'DESCENDING')
+#        assert self.worksheet.get_values('A1','A4') == [['4'],['3'],['2'],['1']]
+#
+#    def test_get_protected_range(self):
+#        range = self.worksheet.range("A1:A2", returnas="range")
+#        range.protected = True
+#        ranges = self.worksheet.get_protected_ranges()
+#        assert len(ranges) == 1
+#        assert ranges[0].protect_id == range.protect_id
+#        range.protected = False
+#
+#    def test_delete_protected_range(self):
+#        range = self.worksheet.range("A1:A2", returnas="range")
+#        range.protected = True
+#        ranges = self.worksheet.get_protected_ranges()
+#        assert len(ranges) == 1
+#        range.protected = False
+#        ranges = self.worksheet.get_protected_ranges()
+#        assert len(ranges) == 0
+#
+#    def test_add_chart(self):
+#        self.worksheet.resize(50,50)
+#        self.worksheet.update_values('A10:C13',[['x','y','z'],[1,5,9],[2,4,8],[3,6,10]])
+#        dmn = [(10,1),(13,1)]
+#        rng = [[(10,2),(13,2)],[(10,3),(13,3)]]
+#        obj = self.worksheet.add_chart(dmn, rng, "Test5", pygsheets.ChartType.COLUMN, "A16")
+#        assert obj.title == "Test5"
+#        assert obj.chart_type == pygsheets.ChartType.COLUMN
+#        assert obj.domain == dmn
+#        assert obj.ranges == rng
+#        assert obj.font_name == "Roboto"
+#        assert obj.title_font_family == "Roboto"
+#        obj.delete()
+#        self.worksheet.clear()
+#
+#    def test_get_charts(self):
+#        self.worksheet.resize(50,50)
+#        self.worksheet.update_values('A30:C33',[['x','y','z'],[1,5,9],[2,4,8],[3,6,10]])
+#        dmn = [(30,1),(33,1)]
+#        rng = [[(30,2),(33,2)],[(30,3),(33,3)]]
+#        obj = self.worksheet.add_chart(dmn, rng, "Test2", pygsheets.ChartType.COLUMN, "A16")
+#        obj2 = self.worksheet.get_charts("Test2")
+#        obj2[0].title = "Test_changed"
+#        obj2[0].chart_type = pygsheets.ChartType.BAR
+#        obj2[0].anchor_cell = (12,7)
+#        obj2[0].ranges = [[(30,2),(33,2)]]
+#        obj2[0].legend_position = "LEFT_LEGEND"
+#        obj.refresh()
+#        assert obj.legend_position == "LEFT_LEGEND"
+#        assert obj.title == "Test_changed"
+#        assert obj.chart_type == pygsheets.ChartType.BAR
+#        assert obj.anchor_cell == (12,7)
+#        assert obj.ranges == [[(30,2),(33,2)]]
+#        obj.delete()
+#        self.worksheet.clear()
 
-        assert self.worksheet.id == json_sheet['properties']['sheetId']
-        assert self.worksheet.title == json_sheet['properties']['title']
-        assert self.worksheet.index == json_sheet['properties']['index']
-
-    def test_resize(self):
-        rows = self.worksheet.rows
-        cols = self.worksheet.cols
-
-        self.worksheet.cols = cols + 1
-        assert self.worksheet.cols == cols + 1
-
-        self.worksheet.add_cols(1)
-        assert self.worksheet.cols == cols + 2
-
-        self.worksheet.rows = rows + 1
-        assert self.worksheet.rows == rows + 1
-
-        self.worksheet.add_rows(1)
-        assert self.worksheet.rows == rows + 2
-
-        self.worksheet.resize(rows, cols)
-        assert self.worksheet.cols == cols
-        assert self.worksheet.rows == rows
-
-    def test_frozen_rows(self):
-        ws = self.worksheet
-        assert ws.frozen_rows == 0
-        ws.frozen_rows = 1
-        ws.refresh()
-        assert ws.frozen_rows == 1
-        ws.frozen_rows = 0
-        ws.refresh()
-
-    def test_frozen_cols(self):
-        ws = self.worksheet
-        assert ws.frozen_cols == 0
-        ws.frozen_cols = 2
-        ws.refresh()
-        assert ws.frozen_cols == 2
-        ws.frozen_cols = 0
-        ws.refresh()
-
-    def test_addr_reformat(self):
-        addr = pygsheets.format_addr((1, 1))
-        assert addr == 'A1'
-
-        addr = pygsheets.format_addr('A1')
-        assert addr == (1, 1)
-
-    def test_cell(self):
-        assert isinstance(self.worksheet.cell('A1'), pygsheets.Cell)
-        assert isinstance(self.worksheet.cell((1, 1)), pygsheets.Cell)
-
-        with pytest.raises(pygsheets.CellNotFound):
-            self.worksheet.cell((self.worksheet.rows + 5, self.worksheet.cols + 5))
-
-    def test_insert_cols_rows(self):
-        cols = self.worksheet.cols
-        self.worksheet.insert_cols(1, 2)
-        assert self.worksheet.cols == (cols+2)
-
-        rows = self.worksheet.rows
-        self.worksheet.insert_rows(1, 2)
-        assert self.worksheet.rows == (rows + 2)
-
-        with pytest.raises(pygsheets.InvalidArgumentValue):
-            pygsheets.format_addr([1, 1])
-
-    def test_values(self):
-        self.worksheet.update_value('A1', 'test val')
-        vals = self.worksheet.get_values('A1', 'B4')
-        assert isinstance(vals, list)
-        assert vals[0][0] == 'test val'
-
-        vals = self.worksheet.get_values('A1', (2, 2), 'cells')
-        assert isinstance(vals, list)
-        assert isinstance(vals[0][0], pygsheets.Cell)
-        assert vals[0][0].value == 'test val'
-
-    def test_update_cells(self):
-        self.worksheet.update_values(crange='A1:B2', values=[[1, 2], [3, 4]])
-        assert self.worksheet.cell((1, 1)).value == str(1)
-        self.worksheet.resize(1, 1)
-        self.worksheet.update_values(crange='A1', values=[[1, 2, 5], [3, 4, 6], [3, 4, 61]], extend=True)
-        assert self.worksheet.cols == 3
-        assert self.worksheet.rows == 3
-        assert self.worksheet.cell((3, 3)).value == '61'
-
-        self.worksheet.resize(30, 30)
-        cells = [pygsheets.Cell('A1', 10), pygsheets.Cell('A2', 12)]
-        self.worksheet.update_values(cell_list=cells)
-        assert self.worksheet.cell((1, 1)).value == str(cells[0].value)
-
-    def test_update_col(self):
-        self.worksheet.resize(30, 30)
-        self.worksheet.update_col(5, [1, 2, 3, 4, 5])
-        cols = self.worksheet.get_col(5)
-        assert isinstance(cols, list)
-        assert cols[3] == str(4)
-
-    def test_update_row(self):
-        self.worksheet.resize(30, 30)
-        self.worksheet.update_row(5, [1, 2, 3, 4, 5])
-        rows = self.worksheet.get_row(5)
-        assert isinstance(rows, list)
-        assert rows[3] == str(4)
-
-    def test_range(self):
-        assert isinstance(self.worksheet.range('A1:A5'), list)
-
-    def test_value_set(self):
-        self.worksheet.update_value('A1', 'xxx')
-        assert self.worksheet.cell('A1').value == 'xxx'
-
-    def test_iter(self):
-        self.worksheet.update_row(1, [1, 2, 3, 4, 5])
-        self.worksheet.update_row(2, [2, 3, 4, 5, 6])
-        wks_iter = iter(self.worksheet)
-        assert next(wks_iter)[:5] == ['1', '2', '3', '4', '5']
-        assert next(wks_iter)[:5] == ['2', '3', '4', '5', '6']
-
-    def test_getitem(self):
-        self.worksheet.update_row(1, [1, 2, 3, 4, 5])
-        row = self.worksheet[0]
-        assert len(row) == self.worksheet.cols
-        assert row[0][0] == str(1)
-
-    def test_clear(self):
-        self.worksheet.update_value('S10', 100)
+    def test_cols_autoresize(self):
+        self.worksheet.update_values(crange='A1:B1', values=[['short', 'loooooooooooooooooooooooooong']])
+        # Baseline
+        json = self.spreadsheet.client.sheet.get(self.spreadsheet.id, fields="sheets/data/columnMetadata/pixelSize")
+        col1 = json['sheets'][0]['data'][0]['columnMetadata'][0]['pixelSize']
+        col2 = json['sheets'][0]['data'][0]['columnMetadata'][1]['pixelSize']
+        assert col1 == 100
+        assert col2 == 100
+        # Autoresize and verify
+        self.worksheet.auto_resize_columns(0, 2)
+        json = self.spreadsheet.client.sheet.get(self.spreadsheet.id, fields="sheets/data/columnMetadata/pixelSize")
+        col1 = json['sheets'][0]['data'][0]['columnMetadata'][0]['pixelSize']
+        col2 = json['sheets'][0]['data'][0]['columnMetadata'][1]['pixelSize']
+        assert col1 < 100
+        assert col2 > 100
         self.worksheet.clear()
-        assert self.worksheet.get_all_values(include_tailing_empty=False, include_tailing_empty_rows=False) == [[]]
 
-    def test_delete_dimension(self):
+    def test_rows_autoresize(self):
+        self.worksheet.update_values(crange='A1:A2', values=[['row'], ['twoooooooooo \n rooooooooows']])
+        # Baseline
+        json = self.spreadsheet.client.sheet.get(self.spreadsheet.id, fields="sheets/data/rowMetadata/pixelSize")
+        row1 = json['sheets'][0]['data'][0]['rowMetadata'][0]['pixelSize']
+        row2 = json['sheets'][0]['data'][0]['rowMetadata'][1]['pixelSize']
+        assert row1 == 21
+        assert row2 == 21
+        # Increase font, word wrap, increase second row drastically
+        ref = Cell("A1")
+        ref.text_format['fontSize'] = 7
+        ref2 = Cell("A2")
+        ref2.text_format['fontSize'] = 60
+        ref2.wrap_strategy = "WRAP"
+        self.worksheet.adjust_row_height(0, pixel_size=500)
+        self.worksheet.adjust_row_height(1, pixel_size=1500)
+        json = self.spreadsheet.client.sheet.get(self.spreadsheet.id, fields="sheets/data/rowMetadata/pixelSize")
+        row1 = json['sheets'][0]['data'][0]['rowMetadata'][0]['pixelSize']
+        row2 = json['sheets'][0]['data'][0]['rowMetadata'][1]['pixelSize']
+        assert row1 == 500
+        assert row2 == 1500
+        # Autoresize and verify
+        json = self.spreadsheet.client.sheet.get(self.spreadsheet.id, fields="sheets/data/rowMetadata/pixelSize")
+        self.worksheet.auto_resize_rows(0, 1)
+        row1 = json['sheets'][0]['data'][0]['rowMetadata'][0]['pixelSize']
+        row2 = json['sheets'][0]['data'][0]['rowMetadata'][1]['pixelSize']
+        assert '' == json['sheets'][0]
+        assert row1 == 21
+        assert row2 == 21
         self.worksheet.clear()
-        rows = self.worksheet.rows
-        self.worksheet.update_row(10, [1, 2, 3, 4, 5])
-        self.worksheet.delete_rows(10)
-        assert self.worksheet.get_value((9, 2)) != 2
-        assert self.worksheet.rows == rows - 1
-
-        cols = self.worksheet.cols
-        self.worksheet.update_col(10, [1, 2, 3, 4, 5])
-        self.worksheet.delete_cols(10)
-        assert self.worksheet.get_value((10, 2)) != 2
-        assert self.worksheet.cols == cols - 1
-
-    def test_copy_to(self):
-        target = pygsheet_client.create(self.copy_sheet_title)
-        spreadsheet_id = target.id
-        worksheet_copy = self.worksheet.copy_to(spreadsheet_id)
-
-        assert worksheet_copy.spreadsheet.id == spreadsheet_id
-
-    # @TODO
-    def test_append_row(self):
-        assert True
-
-    def test_set_dataframe(self):
-        try:
-            import pandas as pd
-        except ImportError:
-            pass
-        else:
-            df = pd.DataFrame({'a': [1, 2, 3, 'g'], 'x': [4, 5, 6, 'h']})
-            self.worksheet.set_dataframe(df, 'B2', copy_head=True, fit=True, copy_index=True)
-            assert self.worksheet.get_value('D5') == '6'
-            assert self.worksheet.get_value('C5') == '3'
-            assert self.worksheet.get_value('D2') == 'x'
-            assert self.worksheet.cols == 4
-            assert self.worksheet.rows == 6
-
-            self.worksheet.set_dataframe(df, 'B2', copy_head=True, fit=True, copy_index=False)
-            assert self.worksheet.get_value('C2') == 'x'
-
-            self.worksheet.set_dataframe(df, 'B2', copy_head=False, fit=True, copy_index=False)
-            assert self.worksheet.get_value('B2') == '1'
-            assert self.worksheet.get_value('C2') == '4'
-
-            # Test MultiIndex
-            try:
-                import numpy as np
-            except ImportError:
-                pass
-            else:
-                arrays = [np.array(['bar', 'bar', 'baz', 'baz', 'foo', 'foo', 'qux', 'qux']),
-                          np.array(['one', 'two', 'one', 'two', 'one', 'two', 'one', 'two'])]
-                tuples = list(zip(*arrays))
-                index = pd.MultiIndex.from_tuples(tuples, names=['first', 'second'])
-                df = pd.DataFrame(np.random.randn(8, 8), index=index, columns=index)
-                self.worksheet.set_dataframe(df, 'A1', copy_index=True)
-                assert self.worksheet.get_value('C1') == 'bar'
-                assert self.worksheet.get_value('C2') == 'one'
-                assert self.worksheet.get_value('F1') == 'baz'
-                assert self.worksheet.get_value('F2') == 'two'
-                self.worksheet.clear()
-
-    # @TODO
-    def test_get_as_df(self):
-        assert True
-
-    def test_get_values(self):
-        self.worksheet.resize(10, 10)
-        self.worksheet.clear()
-
-        assert self.worksheet.get_values('A1', 'E5', include_tailing_empty=True, include_tailing_empty_rows=True)
-
-        self.worksheet.update_values('A1:D4', [[1, 2, '', 3], ['','','',''], [4, 5, '', ''], ['', 6, '', '']])
-        # matrix testing
-        assert self.worksheet.get_values('A1', 'E5', include_tailing_empty=True, include_tailing_empty_rows=True) == \
-               [[u'1', u'2', u'', u'3', ''], ['', '', '', '', ''], [u'4', u'5', '', '', ''], [u'', u'6', '', '', ''], ['', '', '', '', '']]
-        assert self.worksheet.get_values('A1', 'E5', include_tailing_empty=True, include_tailing_empty_rows=False) == \
-               [[u'1', u'2', u'', u'3', ''], ['', '', '', '', ''], [u'4', u'5', '', '', ''], [u'', u'6', '', '', ''] ]
-        assert self.worksheet.get_values('A1', 'E5', include_tailing_empty=False, include_tailing_empty_rows=True) == \
-               [[u'1', u'2', u'', u'3'], [], [u'4', u'5'], [u'', u'6'], []]
-        assert self.worksheet.get_values('A1', 'E5', include_tailing_empty=False, include_tailing_empty_rows=False) == \
-               [[u'1', u'2', u'', u'3'], [], [u'4', u'5'], [u'', u'6']]
-
-        # matrix testing columns
-        assert self.worksheet.get_values('A1', 'E5', include_tailing_empty=True, include_tailing_empty_rows=True, majdim="COLUMNS") == \
-               [[u'1', u'', u'4', '', ''],[u'2', u'', u'5', u'6', ''], ['', '', '', '', ''], [u'3', '', '', '', ''], ['', '', '', '', '']]
-        assert self.worksheet.get_values('A1', 'E5', include_tailing_empty=True, include_tailing_empty_rows=False, majdim="COLUMNS") == \
-               [[u'1', u'', u'4', '', ''],[u'2', u'', u'5', u'6', ''], ['', '', '', '', ''], [u'3', '', '', '', '']]
-        assert self.worksheet.get_values('A1', 'E5', include_tailing_empty=False, include_tailing_empty_rows=True, majdim="COLUMNS") == \
-               [[u'1', u'', u'4'], [u'2', u'', u'5', u'6'], [], [u'3'], []]
-        assert self.worksheet.get_values('A1', 'E5', include_tailing_empty=False, include_tailing_empty_rows=False, majdim="COLUMNS") == \
-               [[u'1', u'', u'4'], [u'2', u'', u'5', u'6'], [], [u'3']]
-
-        # Cells testing rows
-        self.worksheet.clear()
-        self.worksheet.update_values('A1:B2', [[1, 2], [3,'']])
-        assert self.worksheet.get_values('A1', 'C3', include_tailing_empty=True, include_tailing_empty_rows=True,returnas="cells") == \
-               [[Cell('A1', '1'), Cell('B1', '2'), Cell('C1', '')],
-                [Cell('A2', '3'), Cell('B2', ''), Cell('C2', '')],
-                [Cell('A3', ''), Cell('B3', ''), Cell('C3', '')]]
-        assert self.worksheet.get_values('A1', 'C3', include_tailing_empty=True, include_tailing_empty_rows=False,returnas="cells") == \
-               [[Cell('A1', '1'), Cell('B1', '2'), Cell('C1', '')],
-                [Cell('A2', '3'), Cell('B2', ''), Cell('C2', '')]]
-        assert self.worksheet.get_values('A1', 'C3', include_tailing_empty=False, include_tailing_empty_rows=True ,returnas="cells") == \
-               [[Cell('A1', '1'), Cell('B1', '2')], [Cell('A2', '3')], []]
-        assert self.worksheet.get_values('A1', 'D3', include_tailing_empty=False, include_tailing_empty_rows=False,returnas="cells" ) == \
-               [[Cell('A1', '1'), Cell('B1', '2')], [Cell('A2', '3')]]
-
-        # Cells testing cols
-        self.worksheet.clear()
-        self.worksheet.update_values('A1:B2', [[1, 2], [3,'']])
-        assert self.worksheet.get_values('A1', 'C3', include_tailing_empty=True, include_tailing_empty_rows=True,returnas="cells",majdim="COLUMNS") == \
-               [[Cell('A1', '1'), Cell('A2', '2'), Cell('A3', '')],
-                [Cell('B1', '3'), Cell('B2', ''), Cell('B3', '')],
-                [Cell('C1', ''), Cell('C2', ''), Cell('C3', '')]]
-        assert self.worksheet.get_values('A1', 'C3', include_tailing_empty=True, include_tailing_empty_rows=False,returnas="cells",majdim="COLUMNS") == \
-               [[Cell('A1', '1'), Cell('A2', '2'), Cell('A3', '')],
-                [Cell('B1', '3'), Cell('B2', ''), Cell('B3', '')]]
-        assert self.worksheet.get_values('A1', 'C3', include_tailing_empty=False, include_tailing_empty_rows=True ,returnas="cells",majdim="COLUMNS") == \
-               [[Cell('A1', '1'), Cell('A2', '2')], [Cell('B1', '3')], []]
-        assert self.worksheet.get_values('A1', 'D3', include_tailing_empty=False, include_tailing_empty_rows=False,returnas="cells",majdim="COLUMNS") == \
-               [[Cell('A1', '1'), Cell('A2', '2')], [Cell('B1', '3')]]
-
-    def test_hide_rows(self):
-        self.worksheet.hide_dimensions(0, 2,dimension="ROWS")
-        json = self.spreadsheet.client.sheet.get(self.spreadsheet.id, fields="sheets/data/rowMetadata/hiddenByUser")
-        assert json['sheets'][0]['data'][0]['rowMetadata'][0]['hiddenByUser'] == True
-        assert json['sheets'][0]['data'][0]['rowMetadata'][1]['hiddenByUser'] == True
-        self.worksheet.show_dimensions(0, 2,dimension="ROWS")
-        json = self.spreadsheet.client.sheet.get(self.spreadsheet.id, fields="sheets/data/rowMetadata/hiddenByUser")
-        assert json['sheets'][0]['data'][0]['rowMetadata'][0].get('hiddenByUser', False) == False
-        assert json['sheets'][0]['data'][0]['rowMetadata'][1].get('hiddenByUser', False) == False
-
-    def test_hide_columns(self):
-        self.worksheet.hide_dimensions(0, 2,dimension="COLUMNS")
-        json = self.spreadsheet.client.sheet.get(self.spreadsheet.id, fields="sheets/data/columnMetadata/hiddenByUser")
-        assert json['sheets'][0]['data'][0]['columnMetadata'][0]['hiddenByUser'] == True
-        assert json['sheets'][0]['data'][0]['columnMetadata'][1]['hiddenByUser'] == True
-        self.worksheet.show_dimensions(0, 2, dimension="COLUMNS")
-        json = self.spreadsheet.client.sheet.get(self.spreadsheet.id, fields="sheets/data/columnMetadata/hiddenByUser")
-        assert json['sheets'][0]['data'][0]['columnMetadata'][0].get('hiddenByUser', False) == False
-        assert json['sheets'][0]['data'][0]['columnMetadata'][1].get('hiddenByUser', False) == False
-
-    def test_find(self):
-        cells = self.worksheet.find('test')
-        assert isinstance(cells, list)
-        assert 0 == len(cells)
-        self.worksheet.clear()
-        self.worksheet.update_row(1, ['test', 'test', 100, 'TEST', 'testtest', 'test', 'test', '=SUM(C:C)'])
-
-        cells = self.worksheet.find('test')
-        assert 6 == len(cells)
-        cells = self.worksheet.find('Test')
-        assert 6 == len(cells)
-        cells = self.worksheet.find('TEST')
-        assert 6 == len(cells)
-        cells = self.worksheet.find('test', matchCase=True)
-        assert 5 == len(cells)
-        cells = self.worksheet.find('TEST', matchCase=True)
-        assert 1 == len(cells)
-        cells = self.worksheet.find('test', matchEntireCell=True)
-        assert 5 == len(cells)
-        cells = self.worksheet.find('test', matchCase=True, matchEntireCell=True)
-        assert 4 == len(cells)
-        cells = self.worksheet.find('test', searchByRegex=True, matchCase=True)
-        assert 5 == len(cells)
-        cells = self.worksheet.find('test', searchByRegex=True, matchEntireCell=True)
-        assert 5 == len(cells)
-        cells = self.worksheet.find('test', searchByRegex=True, matchCase=True, matchEntireCell=True)
-        assert 4 == len(cells)
-        cells = self.worksheet.find('100')
-        assert 1 == len(cells)
-        cells = self.worksheet.find('100', matchEntireCell=False, includeFormulas=True)
-        assert 2 == len(cells)
-        cells = self.worksheet.find('\w+', searchByRegex=True)
-        assert 7 == len(cells)
-        self.worksheet.clear('A1', 'H1')
-
-    def test_replace(self):
-        self.worksheet.update_row(1, ['test', 'test', 100, 'TEST', 'testtest', 'test', 'test', '=SUM(C:C)'])
-        self.worksheet.replace('test', 'value')
-        assert self.worksheet.cell('A1').value == 'value'
-
-        # TODO: Unlink does not work. This should test unlinked replace, as it is different from linked.
-        # but instead just tests normal again.
-        # self.worksheet.unlink()
-        # self.worksheet.replace('value', 'test')
-        # assert self.worksheet.cell('A1').value == 'test'
-
-    def test_export(self):
-        self.worksheet.update_row(1, ['test', 'test', 'test'])
-        self.worksheet.export(filename='test', path=self.output_path)
-        self.worksheet.export(file_format=ExportType.PDF, filename='test', path=self.output_path)
-        self.worksheet.export(file_format=ExportType.XLS, filename='test', path=self.output_path)
-        self.worksheet.export(file_format=ExportType.ODT, filename='test', path=self.output_path)
-        self.worksheet.export(file_format=ExportType.HTML, filename='test', path=self.output_path)
-        self.worksheet.export(file_format=ExportType.TSV, filename='test', path=self.output_path)
-
-        assert os.path.exists(self.output_path + '/test.csv')
-        assert os.path.exists(self.output_path + '/test.tsv')
-        assert os.path.exists(self.output_path + '/test.xls')
-        assert os.path.exists(self.output_path + '/test.odt')
-        assert os.path.exists(self.output_path + '/test.zip')
-
-        self.spreadsheet.add_worksheet('test2')
-        worksheet_2 = self.spreadsheet.worksheet('title', 'test2')
-        worksheet_2.update_row(1, ['test', 'test', 'test', 'test', 'test'])
-        worksheet_2.export(file_format=ExportType.CSV, filename='test', path=self.output_path)
-
-        assert os.path.exists(self.output_path + '/test.csv')
-        with open(self.output_path + '/test.csv', 'r') as file:
-            content = file.read()
-            assert 'test,test,test,test,test' == content
-
-        self.worksheet.clear()
-        self.spreadsheet.del_worksheet(worksheet_2)
-
-    def test_sort_range(self):
-        self.worksheet.update_values('A1:A4',[[2],[3],[1],[4]])
-        self.worksheet.sort_range('A1','A4',0,'ASCENDING')
-        assert self.worksheet.get_values('A1','A4') == [['1'],['2'],['3'],['4']]
-        self.worksheet.sort_range('A1','A4',0,'DESCENDING')
-        assert self.worksheet.get_values('A1','A4') == [['4'],['3'],['2'],['1']]
-
-    def test_get_protected_range(self):
-        range = self.worksheet.range("A1:A2", returnas="range")
-        range.protected = True
-        ranges = self.worksheet.get_protected_ranges()
-        assert len(ranges) == 1
-        assert ranges[0].protect_id == range.protect_id
-        range.protected = False
-
-    def test_delete_protected_range(self):
-        range = self.worksheet.range("A1:A2", returnas="range")
-        range.protected = True
-        ranges = self.worksheet.get_protected_ranges()
-        assert len(ranges) == 1
-        range.protected = False
-        ranges = self.worksheet.get_protected_ranges()
-        assert len(ranges) == 0
-
-    def test_add_chart(self):
-        self.worksheet.resize(50,50)
-        self.worksheet.update_values('A10:C13',[['x','y','z'],[1,5,9],[2,4,8],[3,6,10]])
-        dmn = [(10,1),(13,1)]
-        rng = [[(10,2),(13,2)],[(10,3),(13,3)]]
-        obj = self.worksheet.add_chart(dmn, rng, "Test5", pygsheets.ChartType.COLUMN, "A16")
-        assert obj.title == "Test5"
-        assert obj.chart_type == pygsheets.ChartType.COLUMN
-        assert obj.domain == dmn
-        assert obj.ranges == rng
-        assert obj.font_name == "Roboto"
-        assert obj.title_font_family == "Roboto"
-        obj.delete()
-        self.worksheet.clear()
-
-    def test_get_charts(self):
-        self.worksheet.resize(50,50)
-        self.worksheet.update_values('A30:C33',[['x','y','z'],[1,5,9],[2,4,8],[3,6,10]])
-        dmn = [(30,1),(33,1)]
-        rng = [[(30,2),(33,2)],[(30,3),(33,3)]]
-        obj = self.worksheet.add_chart(dmn, rng, "Test2", pygsheets.ChartType.COLUMN, "A16")
-        obj2 = self.worksheet.get_charts("Test2")
-        obj2[0].title = "Test_changed"
-        obj2[0].chart_type = pygsheets.ChartType.BAR
-        obj2[0].anchor_cell = (12,7)
-        obj2[0].ranges = [[(30,2),(33,2)]]
-        obj2[0].legend_position = "LEFT_LEGEND"
-        obj.refresh()
-        assert obj.legend_position == "LEFT_LEGEND"
-        assert obj.title == "Test_changed"
-        assert obj.chart_type == pygsheets.ChartType.BAR
-        assert obj.anchor_cell == (12,7)
-        assert obj.ranges == [[(30,2),(33,2)]]
-        obj.delete()
-        self.worksheet.clear()
-
 
 # @pytest.mark.skip()
 class TestDataRange(object):
